@@ -6,7 +6,7 @@
 
 #include "VtBuffer.hpp"
 #include "Global.hpp"
-#include "SpatialhashGPU.cuh"
+#include "SpatialHashGPU.cuh"
 
 using namespace std;
 

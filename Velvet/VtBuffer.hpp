@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common.cuh"
-
+#include "cuda_gl_interop.h"
 namespace Velvet
 {
 	template <class T>
