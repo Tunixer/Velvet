@@ -16,3 +16,4 @@ External/
 build/
 compile_commands.json
 .cache/
+.VSCodeCounter/

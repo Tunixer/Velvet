@@ -9,6 +9,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Set CUDA architectures
+# Auto-detect GPU architecture, or specify manually
+# For compute capability 8.9 (RTX 40 series), use: 89
+# For compatibility, we can specify multiple architectures
+if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+    # Try to auto-detect, or use common architectures
+    # This will compile for multiple architectures for better compatibility
+    set(CMAKE_CUDA_ARCHITECTURES "75;80;86;89" CACHE STRING "CUDA architectures to build for")
+    message(STATUS "CUDA architectures not specified, using: ${CMAKE_CUDA_ARCHITECTURES}")
+endif()
 # Build configuration
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
