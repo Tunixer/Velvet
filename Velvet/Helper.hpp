@@ -3,6 +3,7 @@
 #include <fmt/format.h>
 //#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <algorithm>
 
 template <>
 struct fmt::formatter<glm::vec3> : fmt::formatter<std::string> {
@@ -35,7 +36,7 @@ namespace Velvet
 		template <class T>
 		T Lerp(T value1, T value2, float a)
 		{
-			a = min(max(a, 0.0f), 1.0f);
+			a = std::min(std::max(a, 0.0f), 1.0f);
 			return a * value2 + (1 - a) * value1;
 		}
 	}

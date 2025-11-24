@@ -12,3 +12,8 @@ x86/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
+External/
+build/
+compile_commands.json
+.cache/
+.VSCodeCounter/

@@ -78,7 +78,7 @@ struct VtGameState
 	bool detailTimer = false;
 };
 
-template <class T, class... TArgs>
+template <class T>
 class VtCallback
 {
 public:

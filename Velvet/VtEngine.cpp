@@ -89,9 +89,9 @@ int VtEngine::Run()
 #pragma warning( push )
 #pragma warning( disable : 4129)
 		fmt::print(
-			"©°{0:\-^{2}}©´\n"
-			"©¦{1: ^{2}}©¦\n"
-			"©¸{0:\-^{2}}©¼\n", "", "Hello, Velvet!", 30);
+			"é”Ÿæ–¤æ‹·{0:\-^{2}}é”Ÿæ–¤æ‹·\n"
+			"é”Ÿæ–¤æ‹·{1: ^{2}}é”Ÿæ–¤æ‹·\n"
+			"é”Ÿæ–¤æ‹·{0:\-^{2}}é”Ÿæ–¤æ‹·\n", "", "Hello, Velvet!", 30);
 #pragma warning( pop ) 
 
 		m_game = make_shared<GameInstance>(m_window, m_gui);

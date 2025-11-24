@@ -53,6 +53,12 @@ If you want to build from source by yourself, dependencies can be installed usin
 ./vcpkg.exe install imgui[core, opengl3-binding, glfw-binding]:x64-windows
 ```
 
+If you want to run from linux, you can use the following commands:
+```bash
+./${CMAKE_BINARY_DIR}/bin/Velvet
+```
+The ${CMAKE_BINARY_DIR} is the build directory, you can find it in the root of the project.
+
 ## Implementation Details
 
 In computer graphics, building your own wheel can often be unevitable. But what fears most is that sometimes you don't even have recipe for the wheel you want to build. There are lots of great paper describing their methods, but many of the implementation details are left out or scattered across the internet.
