@@ -340,7 +340,10 @@ namespace Velvet
 			mat->SetVec4("_Plane", glm::vec4(0, 1, 0, 0));
 
 			const vector<glm::vec3> vertices = {
-				glm::vec3(1,1,0), glm::vec3(-1,-1,0), glm::vec3(-1,1,0), glm::vec3(1,-1,0) };
+				glm::vec3( 1, 1,0), 
+				glm::vec3(-1,-1,0), 
+				glm::vec3(-1, 1,0), 
+				glm::vec3( 1,-1,0)};
 			const vector<unsigned int> indices = { 2,1,0, 3, 0, 1 };
 
 			auto mesh = make_shared<Mesh>(vertices, vector<glm::vec3>(), vector<glm::vec2>(), indices);
