@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Velvet WebGPU - Cloth Simulation</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    #error {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      background: rgba(255, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 10px;
+      display: none;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="info">
+    <h1>Velvet WebGPU</h1>
+    <p>Cloth Simulation Engine</p>
+    <p>FPS: <span id="fps">0</span></p>
+    <p>Particles: <span id="particles">0</span></p>
+  </div>
+  <div id="error"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
