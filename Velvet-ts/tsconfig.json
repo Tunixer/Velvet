@@ -10,8 +10,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "lib": ["ES2020", "WebGPU"],
-    "types": ["vite/client"]
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "types": ["vite/client", "@webgpu/types"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

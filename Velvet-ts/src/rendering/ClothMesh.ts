@@ -12,148 +12,148 @@ import type { ClothConfig } from '../core/types.js';
  * Manages Three.js mesh for rendering cloth simulation
  */
 export class ClothMesh {
-  readonly mesh: THREE.Mesh;
-  readonly geometry: THREE.BufferGeometry;
-  readonly material: THREE.Material;
-  readonly config: ClothConfig;
+    readonly mesh: THREE.Mesh;
+    readonly geometry: THREE.BufferGeometry;
+    readonly material: THREE.Material;
+    readonly config: ClothConfig;
 
-  // Vertex count
-  readonly numVertices: number;
+    // Vertex count
+    readonly numVertices: number;
 
-  // CPU-side buffer for reading GPU data (for debugging)
-  private positionArray: Float32Array;
+    // CPU-side buffer for reading GPU data (for debugging)
+    private positionArray: Float32Array;
 
-  constructor(config: ClothConfig) {
-    this.config = config;
-    this.numVertices = (config.resolution + 1) * (config.resolution + 1);
+    constructor(config: ClothConfig) {
+        this.config = config;
+        this.numVertices = (config.resolution + 1) * (config.resolution + 1);
 
-    // Create geometry
-    this.geometry = this.createClothGeometry();
-    this.positionArray = this.geometry.attributes.position.array as Float32Array;
+        // Create geometry
+        this.geometry = this.createClothGeometry();
+        this.positionArray = this.geometry.attributes.position.array as Float32Array;
 
-    // Create material
-    this.material = this.createClothMaterial();
+        // Create material
+        this.material = this.createClothMaterial();
 
-    // Create mesh
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
-    this.mesh.castShadow = true;
-    this.mesh.receiveShadow = true;
+        // Create mesh
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+        this.mesh.castShadow = true;
+        this.mesh.receiveShadow = true;
 
-    // Position mesh
-    this.mesh.position.set(0, 0, 0);
-  }
-
-  /**
-   * Create buffer geometry for cloth grid
-   */
-  private createClothGeometry(): THREE.BufferGeometry {
-    const geometry = new THREE.BufferGeometry();
-
-    // Generate vertices (flat grid)
-    const positions = new Float32Array(this.numVertices * 3);
-    const uvs = new Float32Array(this.numVertices * 2);
-
-    const step = this.config.size / this.config.resolution;
-    const offset = this.config.size / 2;
-
-    for (let y = 0; y <= this.config.resolution; y++) {
-      for (let x = 0; x <= this.config.resolution; x++) {
-        const i = y * (this.config.resolution + 1) + x;
-
-        // Position
-        positions[i * 3 + 0] = x * step - offset;
-        positions[i * 3 + 1] = 0;
-        positions[i * 3 + 2] = y * step - offset;
-
-        // UV coordinates
-        uvs[i * 2 + 0] = x / this.config.resolution;
-        uvs[i * 2 + 1] = y / this.config.resolution;
-      }
+        // Position mesh
+        this.mesh.position.set(0, 0, 0);
     }
 
-    // Generate indices (triangles)
-    const indices = this.generateIndices();
+    /**
+     * Create buffer geometry for cloth grid
+     */
+    private createClothGeometry(): THREE.BufferGeometry {
+        const geometry = new THREE.BufferGeometry();
 
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-    geometry.setIndex(indices);
-    geometry.computeVertexNormals();
+        // Generate vertices (flat grid)
+        const positions = new Float32Array(this.numVertices * 3);
+        const uvs = new Float32Array(this.numVertices * 2);
 
-    return geometry;
-  }
+        const step = this.config.size / this.config.resolution;
+        const offset = this.config.size / 2;
 
-  /**
-   * Generate triangle indices for grid
-   */
-  private generateIndices(): Uint16Array {
-    const indices: number[] = [];
-    const resolution = this.config.resolution;
+        for (let y = 0; y <= this.config.resolution; y++) {
+            for (let x = 0; x <= this.config.resolution; x++) {
+                const i = y * (this.config.resolution + 1) + x;
 
-    for (let y = 0; y < resolution; y++) {
-      for (let x = 0; x < resolution; x++) {
-        const i = y * (resolution + 1) + x;
+                // Position
+                positions[i * 3 + 0] = x * step - offset;
+                positions[i * 3 + 1] = 0;
+                positions[i * 3 + 2] = y * step - offset;
 
-        // First triangle
-        indices.push(i);
-        indices.push(i + 1);
-        indices.push(i + resolution + 1);
+                // UV coordinates
+                uvs[i * 2 + 0] = x / this.config.resolution;
+                uvs[i * 2 + 1] = y / this.config.resolution;
+            }
+        }
 
-        // Second triangle
-        indices.push(i + 1);
-        indices.push(i + resolution + 2);
-        indices.push(i + resolution + 1);
-      }
+        // Generate indices (triangles)
+        const indices = this.generateIndices();
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+        geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+        geometry.computeVertexNormals();
+
+        return geometry;
     }
 
-    return new Uint16Array(indices);
-  }
+    /**
+     * Generate triangle indices for grid
+     */
+    private generateIndices(): Uint16Array {
+        const indices: number[] = [];
+        const resolution = this.config.resolution;
 
-  /**
-   * Create cloth material
-   */
-  private createClothMaterial(): THREE.Material {
-    // Use a simple colored material for now
-    return new THREE.MeshStandardMaterial({
-      color: 0x4488ff,
-      side: THREE.DoubleSide,
-      flatShading: false,
-      roughness: 0.8,
-      metalness: 0.1,
-      wireframe: false,
-    });
-  }
+        for (let y = 0; y < resolution; y++) {
+            for (let x = 0; x < resolution; x++) {
+                const i = y * (resolution + 1) + x;
 
-  /**
-   * Update vertex positions from CPU array
-   * @param positions - New particle positions (numVertices * 3)
-   */
-  updatePositions(positions: Float32Array): void {
-    const geometryPositions = this.geometry.attributes.position.array as Float32Array;
+                // First triangle
+                indices.push(i);
+                indices.push(i + 1);
+                indices.push(i + resolution + 1);
 
-    for (let i = 0; i < this.numVertices * 3; i++) {
-      geometryPositions[i] = positions[i];
+                // Second triangle
+                indices.push(i + 1);
+                indices.push(i + resolution + 2);
+                indices.push(i + resolution + 1);
+            }
+        }
+
+        return new Uint16Array(indices);
     }
 
-    this.geometry.attributes.position.needsUpdate = true;
-    this.geometry.computeVertexNormals();
-  }
-
-  /**
-   * Set wireframe mode
-   */
-  setWireframe(enabled: boolean): void {
-    if (this.material instanceof THREE.MeshStandardMaterial) {
-      this.material.wireframe = enabled;
+    /**
+     * Create cloth material
+     */
+    private createClothMaterial(): THREE.Material {
+        // Use a simple colored material for now
+        return new THREE.MeshStandardMaterial({
+            color: 0x4488ff,
+            side: THREE.DoubleSide,
+            flatShading: false,
+            roughness: 0.8,
+            metalness: 0.1,
+            wireframe: false,
+        });
     }
-  }
 
-  /**
-   * Dispose of resources
-   */
-  dispose(): void {
-    this.geometry.dispose();
-    if (this.material instanceof THREE.Material) {
-      this.material.dispose();
+    /**
+     * Update vertex positions from CPU array
+     * @param positions - New particle positions (numVertices * 3)
+     */
+    updatePositions(positions: Float32Array): void {
+        const geometryPositions = this.geometry.attributes.position.array as Float32Array;
+
+        for (let i = 0; i < this.numVertices * 3; i++) {
+            geometryPositions[i] = positions[i];
+        }
+
+        this.geometry.attributes.position.needsUpdate = true;
+        this.geometry.computeVertexNormals();
     }
-  }
+
+    /**
+     * Set wireframe mode
+     */
+    setWireframe(enabled: boolean): void {
+        if (this.material instanceof THREE.MeshStandardMaterial) {
+            this.material.wireframe = enabled;
+        }
+    }
+
+    /**
+     * Dispose of resources
+     */
+    dispose(): void {
+        this.geometry.dispose();
+        if (this.material instanceof THREE.Material) {
+            this.material.dispose();
+        }
+    }
 }

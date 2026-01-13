@@ -10,23 +10,23 @@ import { SceneManager } from './rendering/SceneManager.js';
 import { ClothMesh } from './rendering/ClothMesh.js';
 
 async function main() {
-  const errorDiv = document.getElementById('error');
-  const fpsDiv = document.getElementById('fps');
-  const particlesDiv = document.getElementById('particles');
+    const errorDiv = document.getElementById('error');
+    const fpsDiv = document.getElementById('fps');
+    const particlesDiv = document.getElementById('particles');
 
-  // Create body container for Three.js
-  const rendererContainer = document.createElement('div');
-  rendererContainer.style.width = '100vw';
-  rendererContainer.style.height = '100vh';
-  rendererContainer.style.position = 'absolute';
-  rendererContainer.style.top = '0';
-  rendererContainer.style.left = '0';
-  document.body.appendChild(rendererContainer);
+    // Create body container for Three.js
+    const rendererContainer = document.createElement('div');
+    rendererContainer.style.width = '100vw';
+    rendererContainer.style.height = '100vh';
+    rendererContainer.style.position = 'absolute';
+    rendererContainer.style.top = '0';
+    rendererContainer.style.left = '0';
+    document.body.appendChild(rendererContainer);
 
-  // Check WebGPU support
-  if (!navigator.gpu) {
-    errorDiv!.style.display = 'block';
-    errorDiv!.innerHTML = `
+    // Check WebGPU support
+    if (!navigator.gpu) {
+        errorDiv!.style.display = 'block';
+        errorDiv!.innerHTML = `
       <h2>⚠️ WebGPU Not Supported</h2>
       <p><strong>Your browser does not support WebGPU.</strong></p>
       <p>WebGPU is required for Velvet cloth simulation.</p>
@@ -51,113 +51,113 @@ async function main() {
       </ul>
       <p><em>Note: Safari does not yet support WebGPU as of early 2024</em></p>
     `;
-    return;
-  }
-
-  try {
-    // Request WebGPU adapter with fallback options
-    let adapter = await navigator.gpu.requestAdapter();
-
-    // If high-performance GPU fails, try default
-    if (!adapter) {
-      console.warn('Failed to get preferred GPU adapter, trying fallback...');
-      adapter = await navigator.gpu.requestAdapter({
-        powerPreference: 'low-power',
-      });
+        return;
     }
 
-    if (!adapter) {
-      throw new Error(
-        'Failed to get WebGPU adapter. Your browser may not support WebGPU or it may be disabled.',
-      );
-    }
+    try {
+        // Request WebGPU adapter with fallback options
+        let adapter = await navigator.gpu.requestAdapter();
 
-    // Log adapter info for debugging
-    console.log('WebGPU Adapter:', adapter.info);
+        // If high-performance GPU fails, try default
+        if (!adapter) {
+            console.warn('Failed to get preferred GPU adapter, trying fallback...');
+            adapter = await navigator.gpu.requestAdapter({
+                powerPreference: 'low-power',
+            });
+        }
 
-    // Request WebGPU device with required features
-    const device = await adapter.requestDevice({
-      requiredFeatures: [],
-      requiredLimits: {
-        maxBufferSize: adapter.limits.maxBufferSize,
-        maxStorageBufferBindingSize: adapter.limits.maxStorageBufferBindingSize,
-      },
-    });
+        if (!adapter) {
+            throw new Error(
+                'Failed to get WebGPU adapter. Your browser may not support WebGPU or it may be disabled.'
+            );
+        }
 
-    console.log('WebGPU Device created successfully');
-    console.log('Device limits:', device.limits);
+        // Log adapter info for debugging
+        console.log('WebGPU Adapter:', adapter.info);
 
-    // Initialize cloth solver
-    const clothConfig = {
-      resolution: 50, // 51x51 = 2601 particles
-      size: 2.0,
-      enableSelfCollision: false,
-      // Pin the top corners of the cloth
-      attachIndices: [0, 50], // Top-left and top-right corners
-    };
+        // Request WebGPU device with required features
+        const device = await adapter.requestDevice({
+            requiredFeatures: [],
+            requiredLimits: {
+                maxBufferSize: adapter.limits.maxBufferSize,
+                maxStorageBufferBindingSize: adapter.limits.maxStorageBufferBindingSize,
+            },
+        });
 
-    const solver = new ClothSolverWebGPU(device, clothConfig);
+        console.log('WebGPU Device created successfully');
+        console.log('Device limits:', device.limits);
 
-    // Update info
-    const numParticles = (clothConfig.resolution + 1) * (clothConfig.resolution + 1);
-    particlesDiv!.textContent = numParticles.toString();
+        // Initialize cloth solver
+        const clothConfig = {
+            resolution: 50, // 51x51 = 2601 particles
+            size: 2.0,
+            enableSelfCollision: false,
+            // Pin the top corners of the cloth
+            attachIndices: [0, 50], // Top-left and top-right corners
+        };
 
-    console.log(`Cloth solver initialized with ${numParticles} particles`);
+        const solver = new ClothSolverWebGPU(device, clothConfig);
 
-    // Create Three.js scene
-    const sceneManager = new SceneManager(rendererContainer);
+        // Update info
+        const numParticles = (clothConfig.resolution + 1) * (clothConfig.resolution + 1);
+        particlesDiv!.textContent = numParticles.toString();
 
-    // Create cloth mesh
-    const clothMesh = new ClothMesh(clothConfig);
-    sceneManager.add(clothMesh.mesh);
+        console.log(`Cloth solver initialized with ${numParticles} particles`);
 
-    console.log('Three.js scene initialized');
+        // Create Three.js scene
+        const sceneManager = new SceneManager(rendererContainer);
 
-    // FPS counter and simulation loop
-    let frameCount = 0;
-    let lastTime = performance.now();
-    let lastFpsUpdate = lastTime;
+        // Create cloth mesh
+        const clothMesh = new ClothMesh(clothConfig);
+        sceneManager.add(clothMesh.mesh);
 
-    async function gameLoop() {
-      const currentTime = performance.now();
-      const deltaTime = (currentTime - lastTime) / 1000; // Convert to seconds
-      lastTime = currentTime;
+        console.log('Three.js scene initialized');
 
-      // Simulate physics
-      await solver.simulate(deltaTime);
+        // FPS counter and simulation loop
+        let frameCount = 0;
+        let lastTime = performance.now();
+        let lastFpsUpdate = lastTime;
 
-      // Get positions from GPU and update mesh
-      const positions = await solver.getPositions();
-      clothMesh.updatePositions(positions);
+        async function gameLoop() {
+            const currentTime = performance.now();
+            const deltaTime = (currentTime - lastTime) / 1000; // Convert to seconds
+            lastTime = currentTime;
 
-      // Render scene
-      sceneManager.render();
+            // Simulate physics
+            await solver.simulate(deltaTime);
 
-      // Update FPS counter
-      frameCount++;
-      if (currentTime - lastFpsUpdate >= 1000) {
-        const fps = frameCount;
-        fpsDiv!.textContent = fps.toString();
-        solver.updateStats(fps, deltaTime * 1000);
+            // Get positions from GPU and update mesh
+            const positions = await solver.getPositions();
+            clothMesh.updatePositions(positions);
 
-        const stats = solver.getStats();
-        console.log(`FPS: ${fps}, Frame Time: ${stats.frameTime.toFixed(2)}ms`);
+            // Render scene
+            sceneManager.render();
 
-        frameCount = 0;
-        lastFpsUpdate = currentTime;
-      }
+            // Update FPS counter
+            frameCount++;
+            if (currentTime - lastFpsUpdate >= 1000) {
+                const fps = frameCount;
+                fpsDiv!.textContent = fps.toString();
+                solver.updateStats(fps, deltaTime * 1000);
 
-      requestAnimationFrame(gameLoop);
-    }
+                const stats = solver.getStats();
+                console.log(`FPS: ${fps}, Frame Time: ${stats.frameTime.toFixed(2)}ms`);
 
-    // Start simulation loop
-    gameLoop();
+                frameCount = 0;
+                lastFpsUpdate = currentTime;
+            }
 
-    console.log('Velvet WebGPU simulation started');
-  } catch (error) {
-    console.error('Failed to initialize WebGPU:', error);
-    errorDiv!.style.display = 'block';
-    errorDiv!.innerHTML = `
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start simulation loop
+        gameLoop();
+
+        console.log('Velvet WebGPU simulation started');
+    } catch (error) {
+        console.error('Failed to initialize WebGPU:', error);
+        errorDiv!.style.display = 'block';
+        errorDiv!.innerHTML = `
       <h2>❌ Initialization Error</h2>
       <p><strong>Failed to initialize WebGPU:</strong></p>
       <pre style="background: rgba(0,0,0,0.3); padding: 10px; overflow: auto;">${error}</pre>
@@ -170,7 +170,7 @@ async function main() {
       </ul>
       <p>Check the browser console (F12) for more details.</p>
     `;
-  }
+    }
 }
 
 main();
