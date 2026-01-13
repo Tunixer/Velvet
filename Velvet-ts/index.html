@@ -10,6 +10,13 @@
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
+    #renderer {
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
     #info {
       position: absolute;
       top: 10px;
@@ -35,6 +42,7 @@
   </style>
 </head>
 <body>
+  <div id="renderer"></div>
   <div id="info">
     <h1>Velvet WebGPU</h1>
     <p>Cloth Simulation Engine</p>

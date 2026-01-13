@@ -13,15 +13,11 @@ async function main() {
     const errorDiv = document.getElementById('error');
     const fpsDiv = document.getElementById('fps');
     const particlesDiv = document.getElementById('particles');
+    const rendererContainer = document.getElementById('renderer');
 
-    // Create body container for Three.js
-    const rendererContainer = document.createElement('div');
-    rendererContainer.style.width = '100vw';
-    rendererContainer.style.height = '100vh';
-    rendererContainer.style.position = 'absolute';
-    rendererContainer.style.top = '0';
-    rendererContainer.style.left = '0';
-    document.body.appendChild(rendererContainer);
+    if (!rendererContainer) {
+        throw new Error('Renderer container not found');
+    }
 
     // Check WebGPU support
     if (!navigator.gpu) {

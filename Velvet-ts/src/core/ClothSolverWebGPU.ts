@@ -91,7 +91,7 @@ export class ClothSolverWebGPU {
         this.deltaBuffer = this.bufferManager.createStorageBuffer(numParticles * 3 * 4);
         this.deltaCountBuffer = this.bufferManager.createStorageBuffer(numParticles * 4);
         this.invMassBuffer = this.bufferManager.createStorageBuffer(numParticles * 4);
-        this.uniformBuffer = this.bufferManager.createUniformBuffer(16); // 4 floats
+        this.uniformBuffer = this.bufferManager.createUniformBuffer(24); // 6 floats
 
         // Initialize cloth
         this.initializeCloth();
